@@ -266,7 +266,7 @@ contains
           b% use_radiation_corrected_transfer_rate = .true.
 
           print *, "If this is a failed SN you can set new e and P here"
-          call binary_set_separation_eccentricity(binary_id, 1000000d0*Rsun, 0, ierr)
+          call binary_set_separation_eccentricity(binary_id, 1000000d0*Rsun, 0d0, ierr)
           b% ignore_hard_limits_this_step = .true.
 
           print *, "----------------------------------------"
