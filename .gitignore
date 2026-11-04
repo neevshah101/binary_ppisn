@@ -1,0 +1,27 @@
+# MESA outputs / models
+*.mod
+*.data
+LOGS*/
+LOGS*
+photos/
+png/
+*.png
+
+# SLURM scripts and outputs
+*.slurm
+*.sbatch
+slurm*
+*.sh
+
+# text files
+*.txt
+
+# MESA build artifacts
+build/
+.mesa_temp_cache/
+star
+binary
+.restart
+
+# misc
+.ipynb_checkpoints/
