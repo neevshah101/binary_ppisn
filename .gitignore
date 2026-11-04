@@ -19,6 +19,8 @@ slurm*
 # MESA build artifacts
 build/
 .mesa_temp_cache/
+star
+binary
 .restart
 
 # misc
