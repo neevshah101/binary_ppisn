@@ -25,3 +25,4 @@ binary
 
 # misc
 .ipynb_checkpoints/
+__pycache__/
