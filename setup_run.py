@@ -3,9 +3,9 @@
 Create one MESA binary PPISN run from the binary_ppisn_progenitor template,
 write a SLURM script for it, and commit + push the new run to GitHub.
 
-    runs/z_{Z}/m1_{M1}_q_{Q}_p_{P}/
+    runs/z_{Z}/m1_{M1}_q_{Q}_p_{P}[_Pextra{X}]/   (suffix only if PEXTRA != 1)
         inlist_binary   <- m1, m2, initial_period_in_days
-        inlist_extra    <- new_Z, Zbase
+        inlist_extra    <- new_Z, Zbase, Pextra_factor (both stars)
         submit.slurm    <- (gitignored)
 
 Usage: edit USER CONFIG below, then
@@ -26,6 +26,7 @@ M1 = 150.0          # donor mass (Msun)
 Q = 0.7             # mass ratio q = m2/m1
 PERIOD = 20.0       # initial orbital period (days)
 Z = 1e-4            # metallicity (new_Z and Zbase)
+PEXTRA = 1.5        # Pextra_factor (MESA default 1; only used with atm_option='T_tau', the default)
 
 # SLURM
 ACCOUNT = "binboom"
@@ -70,6 +71,17 @@ def patch(path, values):
             sys.exit(f"ERROR: expected 1 '{key}' in {path}, found {n}")
     path.write_text(text)
 
+def set_pextra(path, value):
+    """Insert Pextra_factor at the top of the &controls namelist."""
+    text = path.read_text()
+    if re.search(r"^\s*Pextra_factor\s*=", text, flags=re.M):
+        sys.exit(f"ERROR: Pextra_factor already set in {path}")
+    text, n = re.subn(r"^(&controls[^\n]*\n)", rf"\g<1>Pextra_factor = {value}\n",
+                      text, flags=re.M)
+    if n != 1:
+        sys.exit(f"ERROR: expected 1 '&controls' in {path}, found {n}")
+    path.write_text(text)
+
 def write_slurm(run_dir, job_name):
     script = run_dir / "submit.slurm"
     script.write_text(f"""#!/bin/bash
@@ -112,6 +124,8 @@ def main():
 
     m2 = round(M1 * Q, 6)
     name = f"m1_{fmt(M1)}_q_{fmt(Q)}_p_{fmt(PERIOD)}"
+    if PEXTRA != 1:
+        name += f"_Pextra{fmt(PEXTRA).replace('.', 'p')}"
     run_dir = RUNS_DIR / f"z_{fmt_z(Z)}" / name
     if run_dir.exists():
         sys.exit(f"ERROR: {run_dir} already exists")
@@ -123,8 +137,9 @@ def main():
         "initial_period_in_days": fortran(PERIOD),
     })
     patch(run_dir / "inlist_extra", {"new_Z": fmt_z(Z), "Zbase": fmt_z(Z)})
+    set_pextra(run_dir / "inlist_extra", fortran(PEXTRA))
     slurm = write_slurm(run_dir, f"z{fmt_z(Z)}_{name}")
-    print(f"Created {run_dir.relative_to(REPO)}  (m1={M1}, q={Q}, m2={m2}, P={PERIOD} d, Z={fmt_z(Z)})")
+    print(f"Created {run_dir.relative_to(REPO)}  (m1={M1}, q={Q}, m2={m2}, P={PERIOD} d, Z={fmt_z(Z)}, Pextra_factor={PEXTRA})")
 
     git("add", str(run_dir), str(Path(__file__).resolve()))
     git("status", "--short")
