@@ -24,17 +24,17 @@ from pathlib import Path
 
 # ── USER CONFIG ────────────────────────────────────────────────────────────────
 
-M1 = 100.0          # donor mass (Msun)
+M1 = 150.0          # donor mass (Msun)
 Q = 0.7             # mass ratio q = m2/m1
 PERIOD = 500.0       # initial orbital period (days)
-Z = 1e-3            # metallicity (new_Z and Zbase)
+Z = 1e-4            # metallicity (new_Z and Zbase)
 PEXTRA = 1        # Pextra_factor (MESA default 1; only used with atm_option='T_tau', the default)
 
 # Rotation (set at the start of the run via set_initial_omega_div_omega_crit in inlist1/2)
-ROT_DONOR = False       # star 1: rotation on/off
-OMEGA_DONOR = 0.0       # star 1: initial omega/omega_crit (used only if ROT_DONOR)
-ROT_ACCRETOR = False    # star 2: rotation on/off
-OMEGA_ACCRETOR = 0.0    # star 2: initial omega/omega_crit (used only if ROT_ACCRETOR)
+ROT_DONOR = True       # star 1: rotation on/off
+OMEGA_DONOR = 0.1       # star 1: initial omega/omega_crit (used only if ROT_DONOR)
+ROT_ACCRETOR = True    # star 2: rotation on/off
+OMEGA_ACCRETOR = 0.1    # star 2: initial omega/omega_crit (used only if ROT_ACCRETOR)
 
 # SLURM
 ACCOUNT = "binboom"
