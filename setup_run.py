@@ -3,8 +3,10 @@
 Create one MESA binary PPISN run from the binary_ppisn_progenitor template,
 write a SLURM script for it, and commit + push the new run to GitHub.
 
-    runs/z_{Z}/m1_{M1}_q_{Q}_p_{P}[_Pextra{X}]/   (suffix only if PEXTRA != 1)
+    runs/z_{Z}/m1_{M1}_q_{Q}_p_{P}[_Pextra{X}][_w1_{W1}][_w2_{W2}]/
+        (Pextra suffix only if PEXTRA != 1; w suffixes only for rotating stars)
         inlist_binary   <- m1, m2, initial_period_in_days
+        inlist1/2       <- new_rotation_flag, new_omega_div_omega_crit
         inlist_extra    <- new_Z, Zbase, Pextra_factor (both stars)
         submit.slurm    <- (gitignored)
 
@@ -27,6 +29,12 @@ Q = 0.7             # mass ratio q = m2/m1
 PERIOD = 500.0       # initial orbital period (days)
 Z = 1e-3            # metallicity (new_Z and Zbase)
 PEXTRA = 1        # Pextra_factor (MESA default 1; only used with atm_option='T_tau', the default)
+
+# Rotation (set at the start of the run via set_initial_omega_div_omega_crit in inlist1/2)
+ROT_DONOR = False       # star 1: rotation on/off
+OMEGA_DONOR = 0.0       # star 1: initial omega/omega_crit (used only if ROT_DONOR)
+ROT_ACCRETOR = False    # star 2: rotation on/off
+OMEGA_ACCRETOR = 0.0    # star 2: initial omega/omega_crit (used only if ROT_ACCRETOR)
 
 # SLURM
 ACCOUNT = "binboom"
@@ -60,11 +68,11 @@ def fortran(v):
     return f"{fmt(v)}d0"
 
 def patch(path, values):
-    """Replace `key = <number>` at the start of a line; fail if a key is missing."""
+    """Replace `key = <number or logical>` at the start of a line; fail if a key is missing."""
     text = path.read_text()
     for key, val in values.items():
         text, n = re.subn(
-            rf"^(\s*{re.escape(key)}\s*=\s*)[-+\d.eEdD]+",
+            rf"^(\s*{re.escape(key)}\s*=\s*)(?:\.true\.|\.false\.|[-+\d.eEdD]+)",
             lambda m: m.group(1) + val, text, flags=re.M,
         )
         if n != 1:
@@ -81,6 +89,14 @@ def set_pextra(path, value):
     if n != 1:
         sys.exit(f"ERROR: expected 1 '&controls' in {path}, found {n}")
     path.write_text(text)
+
+def set_rotation(path, on, omega):
+    if on and not 0 < omega < 1:
+        sys.exit(f"ERROR: omega/omega_crit must be in (0, 1) for a rotating star, got {omega}")
+    patch(path, {
+        "new_rotation_flag": ".true." if on else ".false.",
+        "new_omega_div_omega_crit": fortran(omega if on else 0),
+    })
 
 def write_slurm(run_dir, job_name):
     script = run_dir / "submit.slurm"
@@ -126,6 +142,10 @@ def main():
     name = f"m1_{fmt(M1)}_q_{fmt(Q)}_p_{fmt(PERIOD)}"
     if PEXTRA != 1:
         name += f"_Pextra{fmt(PEXTRA).replace('.', 'p')}"
+    if ROT_DONOR:
+        name += f"_w1_{fmt(OMEGA_DONOR)}"
+    if ROT_ACCRETOR:
+        name += f"_w2_{fmt(OMEGA_ACCRETOR)}"
     run_dir = RUNS_DIR / f"z_{fmt_z(Z)}" / name
     if run_dir.exists():
         sys.exit(f"ERROR: {run_dir} already exists")
@@ -138,8 +158,11 @@ def main():
     })
     patch(run_dir / "inlist_extra", {"new_Z": fmt_z(Z), "Zbase": fmt_z(Z)})
     set_pextra(run_dir / "inlist_extra", fortran(PEXTRA))
+    set_rotation(run_dir / "inlist1", ROT_DONOR, OMEGA_DONOR)
+    set_rotation(run_dir / "inlist2", ROT_ACCRETOR, OMEGA_ACCRETOR)
     slurm = write_slurm(run_dir, f"z{fmt_z(Z)}_{name}")
-    print(f"Created {run_dir.relative_to(REPO)}  (m1={M1}, q={Q}, m2={m2}, P={PERIOD} d, Z={fmt_z(Z)}, Pextra_factor={PEXTRA})")
+    print(f"Created {run_dir.relative_to(REPO)}  (m1={M1}, q={Q}, m2={m2}, P={PERIOD} d, Z={fmt_z(Z)}, Pextra_factor={PEXTRA}, "
+          f"w1={OMEGA_DONOR if ROT_DONOR else 'off'}, w2={OMEGA_ACCRETOR if ROT_ACCRETOR else 'off'})")
 
     git("add", str(run_dir), str(Path(__file__).resolve()))
     git("status", "--short")
