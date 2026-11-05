@@ -26,3 +26,9 @@ binary
 # misc
 .ipynb_checkpoints/
 __pycache__/
+
+# movies
+*.mp4
+
+# keep movie script (overrides *.sh)
+!make_movies.sh
