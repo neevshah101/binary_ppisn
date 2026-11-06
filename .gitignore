@@ -32,3 +32,6 @@ __pycache__/
 
 # keep movie script (overrides *.sh)
 !make_movies.sh
+
+# PDFs
+*.pdf
