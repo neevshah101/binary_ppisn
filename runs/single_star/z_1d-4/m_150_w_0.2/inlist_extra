@@ -1,0 +1,20 @@
+&star_job
+new_Z = 1d-4
+/
+
+
+&kap
+Zbase = 1d-4
+/
+
+&eos
+/
+
+&controls
+Pextra_factor = 1d0
+
+initial_mass = 150d0 ! Msun, set per run
+
+time_delta_coeff = 0.8d0 ! 0.8d0
+mesh_delta_coeff = 1.0d0 !1.0d0 !0.8d0
+/ ! end of controls namelist
