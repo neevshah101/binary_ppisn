@@ -29,8 +29,8 @@ from setup_run import (IGNORE, ACCOUNT, PARTITION, CPUS, TIME,
 
 # ── USER CONFIG ────────────────────────────────────────────────────────────────
 
-MASSES = [100.0]            # initial masses (Msun)
-METALLICITIES = [1e-4]      # Z (new_Z and Zbase)
+MASSES = [100.0, 125.0, 150.0, 175.0, 200.0, 225.0, 250.0, 275.0, 300.0]            # initial masses (Msun)
+METALLICITIES = [1e-4, 1e-3]      # Z (new_Z and Zbase)
 PEXTRA = 1                  # Pextra_factor (MESA default 1)
 ROT = False                 # rotation on/off (all runs)
 OMEGA = 0.1                 # initial omega/omega_crit (used only if ROT)
