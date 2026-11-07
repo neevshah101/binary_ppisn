@@ -9,7 +9,7 @@ Run
 ---
 
 Use MESA branch ``EbF/improve_split_merge_amr_mesh`` at commit
-``5a177b45c259ab7f30ccde116e093184a697db5c``. Initialize the MESA SDK and
+``a4cb2640dffc9b3652eb7f40155eefd09dc561d3``. Initialize the MESA SDK and
 set ``MESA_DIR`` to that checkout. Install MESA from its root::
 
     git lfs pull
