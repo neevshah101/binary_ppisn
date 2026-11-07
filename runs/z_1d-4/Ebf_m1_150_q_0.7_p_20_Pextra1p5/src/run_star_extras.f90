@@ -615,6 +615,12 @@ contains
    write(*,*) '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
 
 
+   ! enhance mass loss below a temperature threshold (x_ctrl(3) = fractional boost, x_ctrl(4) = T threshold in K)
+   if (s% x_ctrl(3) /= 0d0 .and. T1 < s% x_ctrl(4)) then
+      mass_loss = (1d0 + s% x_ctrl(3)) * mass_loss
+      write(*,*) 'cool wind enhancement applied: factor = ', 1d0 + s% x_ctrl(3), ' T = ', T1
+   end if
+
    w = s% Dutch_scaling_factor * mass_loss
 
    s% xtra(20:25) = [flag, mdot_check, L_iter, M_iter, Gamma_e_switch, Gamma_e]
