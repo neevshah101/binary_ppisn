@@ -31,14 +31,8 @@ module run_star_extras
   use binary_def
 
   implicit none
-   real(dp) :: flag = 0  
-   real(dp) :: mdot_check = 0, L_iter = 0, M_iter = 0
-   real(dp) :: Gamma_e_switch = 0, Gamma_e_switch_old = 0                 
-   real(dp) :: Gamma_e = 0, Gamma_e_old = 0, Gamma = 0, Omega_Gamma = 0  
-
-   integer :: do_iter = 1, check_once = 1 
-   integer :: switch_to_V01 = 1         ! boolean to control switches. Begins with true
-   integer :: switch_to_VMS = 1         ! boolean to control switches. Begins with true
+  ! VMS wind state uses xtra(20:25), ixtra(20:22), and lxtra(20).
+  ! These per-star slots are saved in photos and restored on retries.
 
   ! these routines are called by the standard run_star check_model
 contains
@@ -94,6 +88,13 @@ contains
    s% lxtra(5)  = .false. ! s1 He-half      (center_he4 < 0.5)
    s% lxtra(6)  = .false. ! s1 He depletion (center_he4 < 1d-4)
    s% lxtra(7)  = .false. ! s1 C depletion  (center_c12 < 1d-4)
+   s% xtra(20:25) = 0d0
+   s% ixtra(20:22) = 1
+   s% lxtra(20) = .true.
+   else if (.not. s% lxtra(20)) then
+      write(*,'(a)') 'Restart photo has no saved VMS wind state; use a photo made with this fix.'
+      ierr = -1
+      return
    end if
 
   end subroutine extras_startup
@@ -400,11 +401,24 @@ contains
    real(dp) ::  diff_old, diff_new, w1, w2
    real(dp) ::  vcrit, vsurf, v_vcrit_sq, Boost, alpha, Teff_jump
    real(dp) ::  w_all, w_RSG, w_WR, alfa_WR, mass_loss
+   real(dp) :: flag, mdot_check, L_iter, M_iter, Gamma_e_switch, Gamma_e_switch_old
+   real(dp) :: Gamma_e, Gamma_e_old, Gamma, Omega_Gamma
+   integer :: do_iter, switch_to_V01, switch_to_VMS
 
    integer :: nz, i
-   call star_ptr(id,s,ierr)
    w = 0
-   ierr = 0
+   call star_ptr(id,s,ierr)
+   if (ierr /= 0) return
+
+   flag = s% xtra(20)
+   mdot_check = s% xtra(21)
+   L_iter = s% xtra(22)
+   M_iter = s% xtra(23)
+   Gamma_e_switch = s% xtra(24)
+   Gamma_e = s% xtra(25)
+   do_iter = s% ixtra(20)
+   switch_to_V01 = s% ixtra(21)
+   switch_to_VMS = s% ixtra(22)
 
    use_V01 = 0
    use_VMS = 0
@@ -603,8 +617,16 @@ contains
    write(*,*) '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
 
 
+   ! enhance mass loss below a temperature threshold (x_ctrl(3) = fractional boost, x_ctrl(4) = T threshold in K)
+   if (s% x_ctrl(3) /= 0d0 .and. T1 < s% x_ctrl(4)) then
+      mass_loss = (1d0 + s% x_ctrl(3)) * mass_loss
+      write(*,*) 'cool wind enhancement applied: factor = ', 1d0 + s% x_ctrl(3), ' T = ', T1
+   end if
+
    w = s% Dutch_scaling_factor * mass_loss
 
+   s% xtra(20:25) = [flag, mdot_check, L_iter, M_iter, Gamma_e_switch, Gamma_e]
+   s% ixtra(20:22) = [do_iter, switch_to_V01, switch_to_VMS]
 
    contains
 

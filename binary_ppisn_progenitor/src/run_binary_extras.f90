@@ -198,6 +198,7 @@ contains
     integer :: ierr
     character (len=200) :: fname
     real(dp) :: gamma1_s1, gamma1_s2
+    logical :: check_primary_prehydro
 
     call binary_ptr(binary_id, b, ierr)
     if (ierr /= 0) then ! failure in  binary_ptr
@@ -206,7 +207,9 @@ contains
     extras_binary_check_model = keep_going
 
     ! Check if s1 has reached prehydro threshold (only while still a live star)
-    if (b% s1% x_logical_ctrl(1) .and. b% have_star_1) then
+    check_primary_prehydro = .false.
+    if (b% have_star_1) check_primary_prehydro = b% s1% x_logical_ctrl(1)
+    if (check_primary_prehydro) then
        gamma1_s1 = b% s1% xtra(2)
        if (gamma1_s1 < b% s1% x_ctrl(1)) then
 
