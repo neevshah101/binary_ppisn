@@ -71,7 +71,7 @@ cool_wind_full_on_T = 0d0
 
 ! cool-wind enhancement in VMS_framework (run_star_extras):
 ! mdot *= (1 + x_ctrl(3)) when surface T < x_ctrl(4)
-x_ctrl(3) = 0.05d0 ! fractional enhancement (0 = off)
+x_ctrl(3) = 0.10d0 ! fractional enhancement (0 = off)
 x_ctrl(4) = 1d4    ! temperature threshold [K]
     
 !x_character_ctrl(1) = 'Bjorklund' ! donor mass in Msun
