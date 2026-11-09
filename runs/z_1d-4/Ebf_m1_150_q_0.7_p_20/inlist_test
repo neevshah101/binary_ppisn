@@ -1,0 +1,7 @@
+&star_job
+/
+
+&controls
+Pextra_factor = 1d0
+atm_T_tau_opacity = 'fixed'
+/
