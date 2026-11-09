@@ -52,3 +52,24 @@ The model uses TDC with turbulent energy in the energy equation,
 ``mass_fraction_limit_for_Skye = 1d-5``.
 
 Last-Updated: 2026-08 by EbF
+
+Notes
+=====
+
+- 2026-11-09: Rerun of ``m1_100_q_0.7_p_500_pp0`` (old output deleted),
+  recreated from the current ``binary_ppisn_progenitor`` template with m1 = 100,
+  m2 = 70, P = 500 d, Z = 1d-3, ``Pextra_factor = 1``, no rotation. All
+  pp-chain reactions in ``approx21_cr60_plus_co56.net`` now have
+  ``special_rate_factor = 0`` (``inlist_both``): ``rpp_to_he3``,
+  ``r_he3_he3_to_h1_h1_he4``, ``r_he3_ag_be7``, ``r_be7_wk_li7``,
+  ``r_be7_pg_b8``, ``r_h2_pg_he3``. The previous pp0 run only switched off
+  ``rpp_to_he3`` and ``r_he3_he3_to_h1_h1_he4``, leaving the PP-II/III
+  branch (``r_he3_ag_be7``) active. Run from scratch with ``./rn``.
+- 2026-11-09: MESA has been updated with the kap preprocessor bugfix (Type 1
+  OPAL/OP tables returned spurious ``log10(kappa) = 0`` at low T / low rho when
+  the interpolation stencil hit missing ``X = 0`` data). The fix is in
+  ``kap/preprocessor/src/opal_type1.f``; the opacity tables were regenerated
+  and installed and the kap cache rebuilt. These are uncommitted local changes
+  on top of commit ``a4cb2640d`` in ``$MESA_DIR`` (see
+  ``docs/source/known_bugs.rst``, ``opal_op_type1_preprocessor_bug``).
+  This run uses the fixed tables; the previous pp0 run did not.

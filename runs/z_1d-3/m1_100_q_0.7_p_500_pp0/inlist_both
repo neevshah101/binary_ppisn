@@ -27,22 +27,34 @@ change_initial_Z = .true.
 
 show_net_reactions_info = .true.
 
-num_special_rate_factors = 3
+num_special_rate_factors = 7
 reaction_for_special_factor(1) = 'r_c12_ag_o16'
 special_rate_factor(1) = 1
 filename_of_special_rate(1) = 'c12ag_deboer_sigma_0p0_2000_Tgrid.dat'
 
-! pp reaction (p + p -> he3 in approx21) switched off
+! All pp-chain reactions in approx21 (category 'pp' in show_net_reactions_info) switched off
+! p(p,e+nu)h2(p,g)he3  (PP-I start)
 reaction_for_special_factor(2) = 'rpp_to_he3'
 special_rate_factor(2) = 0d0
-
-! He3 burning (he3 + he3 -> 2 h1 + he4 in approx21) switched off
+! he3(he3,2p)he4  (PP-I)
 reaction_for_special_factor(3) = 'r_he3_he3_to_h1_h1_he4'
 special_rate_factor(3) = 0d0
+! he4(he3,g)be7  (PP-II/PP-III branch)
+reaction_for_special_factor(4) = 'r_he3_ag_be7'
+special_rate_factor(4) = 0d0
+! be7(e-,nu)li7  (PP-II)
+reaction_for_special_factor(5) = 'r_be7_wk_li7'
+special_rate_factor(5) = 0d0
+! be7(p,g)b8  (PP-III)
+reaction_for_special_factor(6) = 'r_be7_pg_b8'
+special_rate_factor(6) = 0d0
+! h2(p,g)he3  (listed in net; folded into rpp_to_he3 in approx21)
+reaction_for_special_factor(7) = 'r_h2_pg_he3'
+special_rate_factor(7) = 0d0
 
-! reaction_for_special_factor(4) = 'r_he4_he4_he4_to_c12'
-! special_rate_factor(4) = 1
-! filename_of_special_rate(4) = 'r_he4_he4_he4_to_c12_cf88.txt'
+! reaction_for_special_factor(8) = 'r_he4_he4_he4_to_c12'
+! special_rate_factor(8) = 1
+! filename_of_special_rate(8) = 'r_he4_he4_he4_to_c12_cf88.txt'
 
 / ! end of star_job namelist
 
