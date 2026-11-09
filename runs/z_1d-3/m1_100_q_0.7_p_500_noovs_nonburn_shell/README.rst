@@ -52,3 +52,27 @@ The model uses TDC with turbulent energy in the energy equation,
 ``mass_fraction_limit_for_Skye = 1d-5``.
 
 Last-Updated: 2026-08 by EbF
+
+Notes
+=====
+
+- 2026-11-09: Rerun of ``m1_100_q_0.7_p_500_noovs_nonburn_shell`` (old output
+  deleted). Overshoot rule 2 in ``inlist_both`` changed from
+  ``overshoot_zone_type(2) = 'nonburn'`` to ``'any'`` (``overshoot_scheme(2) =
+  'none'``, ``overshoot_zone_loc(2) = 'shell'``), so no convective shell
+  boundary gets overshoot/undershoot at any stage. MESA labels a convective
+  region ``burn_H`` whenever its max ``log10(T)`` exceeds
+  ``burn_h_mix_region_logT = 6.7`` (``star/private/mix_info.f90``), regardless
+  of ``eps_nuc``; the previous run therefore still applied rule 3 (f = 0.01)
+  to hot, effectively non-burning shells (e.g. accretor shells at
+  ``log10(T)`` ~ 7.3-7.4, model ~800). Only the H-burning core (rule 1,
+  f = 4.15d-2) and other cores (rule 3, f = 0.01) now overshoot. Run from
+  scratch with ``./rn``.
+- 2026-11-09: MESA has been updated with the kap preprocessor bugfix (Type 1
+  OPAL/OP tables returned spurious ``log10(kappa) = 0`` at low T / low rho when
+  the interpolation stencil hit missing ``X = 0`` data). The fix is in
+  ``kap/preprocessor/src/opal_type1.f``; the opacity tables were regenerated
+  and installed and the kap cache rebuilt. These are uncommitted local changes
+  on top of commit ``a4cb2640d`` in ``$MESA_DIR`` (see
+  ``docs/source/known_bugs.rst``, ``opal_op_type1_preprocessor_bug``).
+  This run uses the fixed tables; the previous run did not.
