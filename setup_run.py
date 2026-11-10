@@ -164,13 +164,26 @@ def main():
     print(f"Created {run_dir.relative_to(REPO)}  (m1={M1}, q={Q}, m2={m2}, P={PERIOD} d, Z={fmt_z(Z)}, Pextra_factor={PEXTRA}, "
           f"w1={OMEGA_DONOR if ROT_DONOR else 'off'}, w2={OMEGA_ACCRETOR if ROT_ACCRETOR else 'off'})")
 
+    # RUN_LOG.md (mesa-runlog skill): history + diff vs template + non-default MESA settings
+    runlog = Path.home() / ".claude/skills/mesa-runlog/runlog.py"
+    if runlog.exists():
+        subprocess.run([sys.executable, str(runlog), "init", str(run_dir), "--parent", str(TEMPLATE),
+                        "-m", f"setup_run.py: m1={M1}, q={Q} (m2={m2}), P={PERIOD} d, Z={fmt_z(Z)}, "
+                              f"Pextra_factor={PEXTRA}, w1={OMEGA_DONOR if ROT_DONOR else 'off'}, "
+                              f"w2={OMEGA_ACCRETOR if ROT_ACCRETOR else 'off'}."], check=False)
+    else:
+        print(f"WARNING: {runlog} not found; no RUN_LOG.md written")
+
     git("add", str(run_dir), str(Path(__file__).resolve()))
     git("status", "--short")
     git("commit", "-m", ask_commit_message())
     git("push")
 
     if args.submit:
-        subprocess.run(["sbatch", str(slurm)], check=True)
+        if runlog.exists():
+            subprocess.run([sys.executable, str(runlog), "submit", str(run_dir)], check=True)
+        else:
+            subprocess.run(["sbatch", str(slurm)], check=True)
     else:
         print(f"Submit with: sbatch {slurm}")
 
