@@ -1,0 +1,4 @@
+MESA branch: EbF/improve_split_merge_amr_mesh
+MESA commit: a4cb2640dffc9b3652eb7f40155eefd09dc561d3
+MESA_DIR:    /groups/mrenzo/Neev/Software/mesa
+Local mods:  kap preprocessor fix (kap/preprocessor/src/opal_type1.f, regenerated kap_data), uncommitted on top of the commit above

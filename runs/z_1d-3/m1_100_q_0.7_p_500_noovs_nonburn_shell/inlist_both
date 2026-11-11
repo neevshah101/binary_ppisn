@@ -208,8 +208,6 @@ delta_lgL_hard_limit = 0.2d0
 delta_lgTeff_limit = 0.008d0
 delta_lgTeff_hard_limit = 0.1d0 ! hard limits can crash models.
 
-delta_lgR_limit = 0.01d0 ! restart from x500: no lgR limit was active, allowing a 0.154 dex jump at model 522
-delta_lgR_limit_min_lgR = 0d0 ! default 1d99 disables delta_lgR checks entirely (log10 r in cm)
 
 delta_lgT_cntr_limit = 0.005d0   ! default 0.01
 delta_lgT_limit = 0.025d0         ! default 0.5
