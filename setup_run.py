@@ -111,7 +111,7 @@ def write_slurm(run_dir, job_name):
 #SBATCH --output={run_dir}/slurm-%j.out
 
 echo "=== Job $SLURM_JOB_ID on $(hostname), start: $(date) ==="
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=8
 cd "{run_dir}" || exit 1
 make clean && ./rn
 echo "=== End: $(date) ==="
