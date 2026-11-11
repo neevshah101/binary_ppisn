@@ -11,9 +11,9 @@ pgbinary_flag = .true.
 
 &binary_controls
 
-      m1 = 100d0
-      m2 = 70d0
-      initial_period_in_days = 500d0
+      m1 = 150d0
+      m2 = 105d0
+      initial_period_in_days = 20d0
 
 limit_retention_by_mdot_edd = .false. ! this is for BH secondaries
 use_radiation_corrected_transfer_rate = .false.
